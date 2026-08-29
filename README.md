@@ -2,7 +2,7 @@
 
 Premium skincare commerce workspace with curated catalog, cart operations, and storefront integration.
 
-**Live Demo:** https://gourab775.github.io/amber-skincare
+**Live Demo:** https://amber-skincare.vercel.app
 
 **Category:** E-Commerce / Beauty & Retail
 **Stack:** Next.js 16 · React 19 · TypeScript · Tailwind CSS 4 · Radix UI · Shopify Storefront API
