@@ -122,13 +122,41 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+  *::-webkit-scrollbar {
+    display: none !important;
+    width: 0px !important;
+    height: 0px !important;
   }
   html {
     scroll-behavior: smooth;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+  html::-webkit-scrollbar {
+    display: none !important;
+    width: 0px !important;
+    height: 0px !important;
   }
   body {
     @apply bg-background text-foreground;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
   }
+  body::-webkit-scrollbar {
+    display: none !important;
+    width: 0px !important;
+    height: 0px !important;
+  }
+}
+
+/* Global scrollbar removal across all browsers */
+::-webkit-scrollbar {
+  display: none !important;
+  width: 0px !important;
+  height: 0px !important;
 }
 
 /* Custom soft shadow utility */
