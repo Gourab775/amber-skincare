@@ -2,13 +2,24 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { Menu, X, ShoppingBag, Search, User } from "lucide-react"
+import { Menu, X, ShoppingBag } from "lucide-react"
 import { CartDrawer } from "./cart-drawer"
 import { useCart } from "./cart-context"
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { setIsOpen, itemCount } = useCart()
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+    e.preventDefault()
+    setIsMenuOpen(false)
+    const element = document.getElementById(targetId)
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" })
+    } else {
+      window.location.href = `/#${targetId}`
+    }
+  }
 
   return (
     <header className="fixed top-0 left-0 z-50 px-4 pt-4">
@@ -31,53 +42,44 @@ export function Header() {
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-8">
-            <a
-              href="#collection"
+            <Link
+              href="/shop"
               className="text-sm tracking-wide text-foreground/70 hover:text-foreground boty-transition"
-              onClick={(e) => {
-                e.preventDefault()
-                document.getElementById('collection')?.scrollIntoView({ behavior: 'smooth' })
-              }}
+            >
+              Shop
+            </Link>
+            <a
+              href="/#collection"
+              className="text-sm tracking-wide text-foreground/70 hover:text-foreground boty-transition"
+              onClick={(e) => handleNavClick(e, 'collection')}
             >
               Collection
             </a>
             <a
-              href="#why-amber"
+              href="/#why-amber"
               className="text-sm tracking-wide text-foreground/70 hover:text-foreground boty-transition"
-              onClick={(e) => {
-                e.preventDefault()
-                document.getElementById('why-amber')?.scrollIntoView({ behavior: 'smooth' })
-              }}
+              onClick={(e) => handleNavClick(e, 'why-amber')}
             >
               Why AMBER
             </a>
             <a
-              href="#impact"
+              href="/#impact"
               className="text-sm tracking-wide text-foreground/70 hover:text-foreground boty-transition"
-              onClick={(e) => {
-                e.preventDefault()
-                document.getElementById('impact')?.scrollIntoView({ behavior: 'smooth' })
-              }}
+              onClick={(e) => handleNavClick(e, 'impact')}
             >
               Impact
             </a>
             <a
-              href="#ingredients"
+              href="/#ingredients"
               className="text-sm tracking-wide text-foreground/70 hover:text-foreground boty-transition"
-              onClick={(e) => {
-                e.preventDefault()
-                document.getElementById('ingredients')?.scrollIntoView({ behavior: 'smooth' })
-              }}
+              onClick={(e) => handleNavClick(e, 'ingredients')}
             >
               Ingredients
             </a>
             <a
-              href="#reviews"
+              href="/#reviews"
               className="text-sm tracking-wide text-foreground/70 hover:text-foreground boty-transition"
-              onClick={(e) => {
-                e.preventDefault()
-                document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' })
-              }}
+              onClick={(e) => handleNavClick(e, 'reviews')}
             >
               Reviews
             </a>
@@ -85,16 +87,15 @@ export function Header() {
 
           {/* Right Actions */}
           <div className="hidden lg:flex items-center gap-4">
-            
             <button
               type="button"
               onClick={() => setIsOpen(true)}
-              className="relative p-2 text-foreground/70 hover:text-foreground boty-transition"
+              className="relative p-2 text-foreground/70 hover:text-foreground boty-transition cursor-pointer"
               aria-label="Cart"
             >
               <ShoppingBag className="w-5 h-5" />
               {itemCount > 0 && (
-                <span className="absolute -top-0 -right-0 w-4 h-4 bg-primary text-primary-foreground text-[10px] flex items-center justify-center rounded-full">
+                <span className="absolute -top-0 -right-0 w-4 h-4 bg-primary text-primary-foreground text-[10px] flex items-center justify-center rounded-full font-medium">
                   {itemCount}
                 </span>
               )}
@@ -105,20 +106,13 @@ export function Header() {
           <div className="flex lg:hidden items-center gap-4 ml-auto">
             <button
               type="button"
-              className="p-2 text-foreground/70 hover:text-foreground boty-transition"
-              aria-label="Search"
-            >
-              <Search className="w-5 h-5" />
-            </button>
-            <button
-              type="button"
               onClick={() => setIsOpen(true)}
-              className="relative p-2 text-foreground/70 hover:text-foreground boty-transition"
+              className="relative p-2 text-foreground/70 hover:text-foreground boty-transition cursor-pointer"
               aria-label="Cart"
             >
               <ShoppingBag className="w-5 h-5" />
               {itemCount > 0 && (
-                <span className="absolute -top-0 -right-0 w-4 h-4 bg-primary text-primary-foreground text-[10px] flex items-center justify-center rounded-full">
+                <span className="absolute -top-0 -right-0 w-4 h-4 bg-primary text-primary-foreground text-[10px] flex items-center justify-center rounded-full font-medium">
                   {itemCount}
                 </span>
               )}
@@ -131,62 +125,49 @@ export function Header() {
         {/* Mobile Navigation */}
         <div
           className={`lg:hidden overflow-hidden boty-transition ${
-            isMenuOpen ? "max-h-64 pb-6" : "max-h-0"
+            isMenuOpen ? "max-h-72 pb-6" : "max-h-0"
           }`}
         >
           <div className="flex flex-col gap-4 pt-4 border-t border-border/50">
-            <a
-              href="#collection"
+            <Link
+              href="/shop"
+              onClick={() => setIsMenuOpen(false)}
               className="text-sm tracking-wide text-foreground/70 hover:text-foreground boty-transition"
-              onClick={(e) => {
-                e.preventDefault()
-                setIsMenuOpen(false)
-                document.getElementById('collection')?.scrollIntoView({ behavior: 'smooth' })
-              }}
+            >
+              Shop All
+            </Link>
+            <a
+              href="/#collection"
+              className="text-sm tracking-wide text-foreground/70 hover:text-foreground boty-transition"
+              onClick={(e) => handleNavClick(e, 'collection')}
             >
               Collection
             </a>
             <a
-              href="#why-amber"
+              href="/#why-amber"
               className="text-sm tracking-wide text-foreground/70 hover:text-foreground boty-transition"
-              onClick={(e) => {
-                e.preventDefault()
-                setIsMenuOpen(false)
-                document.getElementById('why-amber')?.scrollIntoView({ behavior: 'smooth' })
-              }}
+              onClick={(e) => handleNavClick(e, 'why-amber')}
             >
               Why AMBER
             </a>
             <a
-              href="#impact"
+              href="/#impact"
               className="text-sm tracking-wide text-foreground/70 hover:text-foreground boty-transition"
-              onClick={(e) => {
-                e.preventDefault()
-                setIsMenuOpen(false)
-                document.getElementById('impact')?.scrollIntoView({ behavior: 'smooth' })
-              }}
+              onClick={(e) => handleNavClick(e, 'impact')}
             >
               Impact
             </a>
             <a
-              href="#ingredients"
+              href="/#ingredients"
               className="text-sm tracking-wide text-foreground/70 hover:text-foreground boty-transition"
-              onClick={(e) => {
-                e.preventDefault()
-                setIsMenuOpen(false)
-                document.getElementById('ingredients')?.scrollIntoView({ behavior: 'smooth' })
-              }}
+              onClick={(e) => handleNavClick(e, 'ingredients')}
             >
               Ingredients
             </a>
             <a
-              href="#reviews"
+              href="/#reviews"
               className="text-sm tracking-wide text-foreground/70 hover:text-foreground boty-transition"
-              onClick={(e) => {
-                e.preventDefault()
-                setIsMenuOpen(false)
-                document.getElementById('reviews')?.scrollIntoView({ behavior: 'smooth' })
-              }}
+              onClick={(e) => handleNavClick(e, 'reviews')}
             >
               Reviews
             </a>

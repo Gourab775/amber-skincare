@@ -4,6 +4,7 @@ import { cookies } from "next/headers"
 import {
   createCart,
   getCart,
+  clearCart as clearCartApi,
   addToCart as addToCartApi,
   updateCartLine as updateCartLineApi,
   removeCartLine as removeCartLineApi,
@@ -69,4 +70,16 @@ export async function updateCartLineAction(lineId: string, quantity: number, car
 export async function removeCartLineAction(lineId: string, cartId?: string): Promise<Cart> {
   const { cartId: id } = await resolveCartId(cartId)
   return removeCartLineApi(id, lineId)
+}
+
+export async function clearCartAction(cartId?: string): Promise<Cart> {
+  const cookieStore = await cookies()
+  const cookieId = cookieStore.get(CART_COOKIE)?.value
+  const id = cartId || cookieId
+  if (id) {
+    await clearCartApi(id)
+  }
+  const freshCart = await createCart()
+  await setCartCookie(freshCart.id)
+  return freshCart
 }

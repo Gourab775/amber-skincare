@@ -19,7 +19,7 @@ const benefits = [
 type AccordionSection = "details" | "howToUse" | "ingredients" | "delivery"
 
 export function ProductDetail({ product }: { product: Product }) {
-  const { addItem, setIsOpen } = useCart()
+  const { addItem } = useCart()
   const [quantity, setQuantity] = useState(1)
   const [openAccordion, setOpenAccordion] = useState<AccordionSection | null>("details")
   const [isAdded, setIsAdded] = useState(false)
@@ -41,7 +41,7 @@ export function ProductDetail({ product }: { product: Product }) {
   const handleBuyNow = async () => {
     if (!product.variantId) return
     await addItem(product.variantId, quantity)
-    setIsOpen(true)
+    window.location.href = "/checkout"
   }
 
   const accordionItems: { key: AccordionSection; title: string; content: string }[] = [
@@ -74,7 +74,7 @@ export function ProductDetail({ product }: { product: Product }) {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           {/* Back Link */}
           <Link
-            href="/#collection"
+            href="/shop"
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground boty-transition mb-8"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -136,7 +136,7 @@ export function ProductDetail({ product }: { product: Product }) {
                   <button
                     type="button"
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="w-10 h-10 rounded-full bg-background flex items-center justify-center text-foreground/60 hover:text-foreground boty-transition"
+                    className="w-10 h-10 rounded-full bg-background flex items-center justify-center text-foreground/60 hover:text-foreground boty-transition cursor-pointer"
                     aria-label="Decrease quantity"
                   >
                     <Minus className="w-4 h-4" />
@@ -145,7 +145,7 @@ export function ProductDetail({ product }: { product: Product }) {
                   <button
                     type="button"
                     onClick={() => setQuantity(quantity + 1)}
-                    className="w-10 h-10 rounded-full bg-background flex items-center justify-center text-foreground/60 hover:text-foreground boty-transition"
+                    className="w-10 h-10 rounded-full bg-background flex items-center justify-center text-foreground/60 hover:text-foreground boty-transition cursor-pointer"
                     aria-label="Increase quantity"
                   >
                     <Plus className="w-4 h-4" />
@@ -159,7 +159,7 @@ export function ProductDetail({ product }: { product: Product }) {
                   type="button"
                   onClick={handleAddToCart}
                   disabled={!product.availableForSale}
-                  className={`flex-1 inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-sm tracking-wide boty-transition boty-shadow disabled:opacity-50 ${
+                  className={`flex-1 inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-sm tracking-wide boty-transition boty-shadow disabled:opacity-50 cursor-pointer ${
                     isAdded
                       ? "bg-primary/80 text-primary-foreground"
                       : "bg-primary text-primary-foreground hover:bg-primary/90"
@@ -180,7 +180,7 @@ export function ProductDetail({ product }: { product: Product }) {
                   type="button"
                   onClick={handleBuyNow}
                   disabled={!product.availableForSale}
-                  className="flex-1 inline-flex items-center justify-center gap-2 bg-transparent border border-foreground/20 text-foreground px-8 py-4 rounded-full text-sm tracking-wide boty-transition hover:bg-foreground/5 disabled:opacity-50"
+                  className="flex-1 inline-flex items-center justify-center gap-2 bg-transparent border border-foreground/20 text-foreground px-8 py-4 rounded-full text-sm tracking-wide boty-transition hover:bg-foreground/5 disabled:opacity-50 cursor-pointer"
                 >
                   Buy Now
                 </button>
@@ -206,7 +206,7 @@ export function ProductDetail({ product }: { product: Product }) {
                     <button
                       type="button"
                       onClick={() => toggleAccordion(item.key)}
-                      className="w-full flex items-center justify-between py-5 text-left"
+                      className="w-full flex items-center justify-between py-5 text-left cursor-pointer"
                     >
                       <span className="font-medium text-foreground">{item.title}</span>
                       <ChevronDown

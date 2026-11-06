@@ -2,6 +2,7 @@
 
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 import {
   Drawer,
   DrawerClose,
@@ -25,12 +26,16 @@ export function CartDrawer() {
     new Intl.NumberFormat("en-US", { style: "currency", currency }).format(amount)
 
   const handleCheckout = () => {
-    if (!cart?.checkoutUrl) return
-    const url = `${cart.checkoutUrl}${cart.checkoutUrl.includes("?") ? "&" : "?"}channel=online_store`
-    if (window.self !== window.top) {
-      window.open(url, "_blank")
+    setIsOpen(false)
+    if (cart?.checkoutUrl && cart.checkoutUrl !== "#" && !cart.checkoutUrl.startsWith("#")) {
+      const url = `${cart.checkoutUrl}${cart.checkoutUrl.includes("?") ? "&" : "?"}channel=online_store`
+      if (window.self !== window.top) {
+        window.open(url, "_blank")
+      } else {
+        window.location.href = url
+      }
     } else {
-      window.location.href = url
+      window.location.href = "/checkout"
     }
   }
 
@@ -49,12 +54,13 @@ export function CartDrawer() {
               <ShoppingBag className="w-12 h-12 text-muted-foreground/50 mb-4" />
               <p className="text-muted-foreground">Your cart is empty</p>
               <DrawerClose asChild>
-                <button
-                  type="button"
-                  className="mt-4 text-primary hover:underline text-sm"
+                <Link
+                  href="/shop"
+                  onClick={() => setIsOpen(false)}
+                  className="mt-4 text-primary hover:underline text-sm font-medium"
                 >
                   Continue Shopping
-                </button>
+                </Link>
               </DrawerClose>
             </div>
           ) : (
@@ -144,8 +150,8 @@ export function CartDrawer() {
             <button
               type="button"
               onClick={handleCheckout}
-              disabled={isPending || !cart?.checkoutUrl}
-              className="w-full bg-primary text-primary-foreground py-4 rounded-full font-medium hover:bg-primary/90 boty-transition disabled:opacity-50"
+              disabled={isPending}
+              className="w-full bg-primary text-primary-foreground py-4 rounded-full font-medium hover:bg-primary/90 boty-transition disabled:opacity-50 cursor-pointer"
             >
               Checkout
             </button>
@@ -153,7 +159,7 @@ export function CartDrawer() {
             <DrawerClose asChild>
               <button
                 type="button"
-                className="w-full border border-border text-foreground py-4 rounded-full font-medium hover:bg-muted boty-transition"
+                className="w-full border border-border text-foreground py-4 rounded-full font-medium hover:bg-muted boty-transition cursor-pointer"
               >
                 Continue Shopping
               </button>

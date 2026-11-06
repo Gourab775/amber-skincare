@@ -533,6 +533,15 @@ function recalculateFallbackCart(cart: Cart): Cart {
   return { ...cart }
 }
 
+export async function clearCart(cartId: string): Promise<void> {
+  if (fallbackCarts[cartId]) {
+    fallbackCarts[cartId].lines = []
+    fallbackCarts[cartId].totalQuantity = 0
+    fallbackCarts[cartId].cost.subtotalAmount.amount = "0.00"
+    fallbackCarts[cartId].cost.totalAmount.amount = "0.00"
+  }
+}
+
 export async function createCart(): Promise<Cart> {
   const storeDomain = process.env.SHOPIFY_STORE_DOMAIN || process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN
   const accessToken = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN || process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN

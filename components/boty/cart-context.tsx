@@ -6,6 +6,7 @@ import {
   addToCartAction,
   updateCartLineAction,
   removeCartLineAction,
+  clearCartAction,
 } from "@/app/actions/cart"
 import type { Cart } from "@/lib/shopify"
 
@@ -14,6 +15,7 @@ interface CartContextType {
   addItem: (variantId: string, quantity?: number) => Promise<void>
   updateQuantity: (lineId: string, quantity: number) => Promise<void>
   removeItem: (lineId: string) => Promise<void>
+  clearCart: () => Promise<void>
   isOpen: boolean
   setIsOpen: (open: boolean) => void
   itemCount: number
@@ -78,6 +80,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  const clearCart = useCallback(async () => {
+    setIsPending(true)
+    try {
+      const freshCart = await clearCartAction(cartIdRef.current)
+      cartIdRef.current = freshCart.id
+      setCart(freshCart)
+    } catch (err) {
+      console.log("[v0] Failed to clear cart:", err)
+      setCart(null)
+    } finally {
+      setIsPending(false)
+    }
+  }, [])
+
   const itemCount = cart?.totalQuantity ?? 0
   const subtotal = cart ? Number.parseFloat(cart.cost.subtotalAmount.amount) : 0
 
@@ -88,6 +104,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         addItem,
         updateQuantity,
         removeItem,
+        clearCart,
         isOpen,
         setIsOpen,
         itemCount,

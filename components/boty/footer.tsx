@@ -5,22 +5,22 @@ import { Instagram, Facebook, Twitter } from "lucide-react"
 
 const footerLinks = {
   shop: [
-    { name: "Products", href: "#products" },
-    { name: "About", href: "#about" },
-    { name: "Ingredients", href: "#ingredients" },
-    { name: "Testimonials", href: "#testimonials" }
+    { name: "All Products", href: "/shop" },
+    { name: "Our Collection", href: "/#collection" },
+    { name: "Botanical Ingredients", href: "/#ingredients" },
+    { name: "Customer Reviews", href: "/#reviews" }
   ],
   about: [
-    { name: "Our Story", href: "#about" },
-    { name: "Ingredients", href: "#ingredients" },
-    { name: "Sustainability", href: "#about" },
-    { name: "Press", href: "/" }
+    { name: "Why AMBER", href: "/#why-amber" },
+    { name: "Our Impact", href: "/#impact" },
+    { name: "Clean Philosophy", href: "/#why-amber" },
+    { name: "Daily Rituals", href: "/#collection" }
   ],
   support: [
-    { name: "Contact Us", href: "/" },
-    { name: "FAQ", href: "/" },
-    { name: "Shipping", href: "/" },
-    { name: "Returns", href: "/" }
+    { name: "Track Your Order", href: "/order-tracking" },
+    { name: "Delivery & Returns", href: "/checkout" },
+    { name: "Contact & FAQ", href: "/#newsletter" },
+    { name: "Newsletter", href: "/#newsletter" }
   ]
 }
 
@@ -129,7 +129,7 @@ export function Footer() {
         <div className="pt-10 border-t border-border/50">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} AMBER. All rights reserved.
+              © {new Date().getFullYear()} AMBER Natural Skincare. All rights reserved.
             </p>
             <div className="flex gap-6">
               <Link href="/" className="text-sm text-muted-foreground hover:text-foreground boty-transition">
