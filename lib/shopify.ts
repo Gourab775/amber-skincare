@@ -38,7 +38,7 @@ export async function shopifyFetch<T>({ query, variables, cache = "force-cache",
   const body = await res.json()
 
   if (body.errors) {
-    console.log("[v0] Shopify GraphQL errors:", JSON.stringify(body.errors))
+    console.log("[amber] Shopify GraphQL errors:", JSON.stringify(body.errors))
     throw new Error(body.errors[0]?.message ?? "Shopify GraphQL error")
   }
 
@@ -493,11 +493,11 @@ type CartMutationResult = {
 
 function unwrapCart(result: CartMutationResult, op: string): Cart {
   if (result.userErrors && result.userErrors.length > 0) {
-    console.log(`[v0] ${op} userErrors:`, JSON.stringify(result.userErrors))
+    console.log(`[amber] ${op} userErrors:`, JSON.stringify(result.userErrors))
     throw new Error(result.userErrors[0].message)
   }
   if (result.warnings && result.warnings.length > 0) {
-    console.log(`[v0] ${op} warnings:`, JSON.stringify(result.warnings))
+    console.log(`[amber] ${op} warnings:`, JSON.stringify(result.warnings))
   }
   if (!result.cart) {
     throw new Error(`${op} returned no cart`)

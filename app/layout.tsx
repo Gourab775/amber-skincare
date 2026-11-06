@@ -20,7 +20,6 @@ const playfairDisplay = Playfair_Display({
 export const metadata: Metadata = {
   title: 'AMBER — Natural Skincare',
   description: 'Discover skincare that breathes with you. Pure ingredients, gentle rituals, radiant results with AMBER.',
-  generator: 'v0.app',
   keywords: ['skincare', 'natural', 'organic', 'beauty', 'body care', 'cruelty-free'],
   icons: {
     icon: [

@@ -82,7 +82,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           saveCartToStorage(local)
         }
       })
-      .catch((err) => console.log("[v0] Background cart sync note:", err))
+      .catch((err) => console.log("[amber] Background cart sync note:", err))
   }, [])
 
   const addItem = useCallback(async (variantId: string, quantity = 1) => {
@@ -157,7 +157,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         saveCartToStorage(serverUpdated)
       }
     } catch (err) {
-      console.log("[v0] Server cart sync handled:", err)
+      console.log("[amber] Server cart sync handled:", err)
     } finally {
       setIsPending(false)
     }
@@ -204,7 +204,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         saveCartToStorage(serverUpdated)
       }
     } catch (err) {
-      console.log("[v0] Server update handled:", err)
+      console.log("[amber] Server update handled:", err)
     } finally {
       setIsPending(false)
     }
@@ -241,7 +241,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         saveCartToStorage(serverUpdated)
       }
     } catch (err) {
-      console.log("[v0] Server remove handled:", err)
+      console.log("[amber] Server remove handled:", err)
     } finally {
       setIsPending(false)
     }
@@ -254,7 +254,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     try {
       await clearCartAction(cartIdRef.current)
     } catch (err) {
-      console.log("[v0] Server clear handled:", err)
+      console.log("[amber] Server clear handled:", err)
     } finally {
       setIsPending(false)
     }
