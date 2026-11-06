@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useState, useEffect, useTransition, Suspense } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import {
   ShieldCheck,
   Lock,
@@ -16,11 +16,51 @@ import {
   ArrowRight,
 } from "lucide-react"
 import { useCart } from "@/components/boty/cart-context"
+import { FALLBACK_PRODUCTS } from "@/lib/products-data"
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const router = useRouter()
-  const { cart, subtotal, clearCart } = useCart()
+  const searchParams = useSearchParams()
+  const { cart, subtotal, clearCart, addItem } = useCart()
   const [isPending, startTransition] = useTransition()
+
+  // Buy now query handling
+  const buyNowId = searchParams.get("buyNow")
+  const buyNowQty = Number.parseInt(searchParams.get("qty") || "1", 10)
+  const buyNowProduct = buyNowId
+    ? FALLBACK_PRODUCTS.find((p) => p.id === buyNowId || p.variantId === buyNowId)
+    : null
+
+  // Local storage fallback state
+  const [storedLines, setStoredLines] = useState<any[]>([])
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const raw = window.localStorage.getItem("amber_cart")
+        if (raw) {
+          const parsed = JSON.parse(raw)
+          if (parsed && Array.isArray(parsed.lines) && parsed.lines.length > 0) {
+            setStoredLines(parsed.lines)
+          }
+        }
+      } catch (e) {
+        console.error("Storage error:", e)
+      }
+    }
+  }, [])
+
+  // Auto-sync buyNow item if cart was empty
+  useEffect(() => {
+    if (buyNowProduct) {
+      const hasItem = (cart?.lines || []).some(
+        (l) => l.merchandiseId === buyNowProduct.variantId || l.productHandle === buyNowProduct.id
+      )
+      if (!hasItem) {
+        addItem(buyNowProduct.variantId, buyNowQty)
+      }
+    }
+  }, [buyNowProduct, buyNowQty, cart?.lines, addItem])
 
   // Form states
   const [email, setEmail] = useState("")
@@ -50,12 +90,41 @@ export default function CheckoutPage() {
   const [promoError, setPromoError] = useState("")
   const [promoSuccess, setPromoSuccess] = useState("")
 
-  const lines = cart?.lines ?? []
+  // Resolve active lines with triple fallback:
+  // 1. cart.lines from context
+  // 2. storedLines from localStorage
+  // 3. buyNowProduct from URL
+  const contextLines = cart?.lines || []
+  let activeLines = contextLines
+  if (activeLines.length === 0 && storedLines.length > 0) {
+    activeLines = storedLines
+  }
+  if (activeLines.length === 0 && buyNowProduct) {
+    activeLines = [
+      {
+        id: `buynow_${buyNowProduct.id}`,
+        title: buyNowProduct.name,
+        price: buyNowProduct.price,
+        quantity: buyNowQty,
+        image: buyNowProduct.image,
+        merchandiseId: buyNowProduct.variantId,
+        productHandle: buyNowProduct.id,
+        currencyCode: buyNowProduct.currencyCode,
+      },
+    ]
+  }
+
+  const effectiveSubtotal = activeLines.reduce(
+    (sum, line) => sum + (line.price || 0) * (line.quantity || 1),
+    0
+  )
   const currency = cart?.cost.subtotalAmount.currencyCode ?? "USD"
 
   const shippingCost = shippingMethod === "express" ? 12 : 0
-  const discountAmount = appliedDiscount ? Math.round(subtotal * appliedDiscount * 100) / 100 : 0
-  const grandTotal = Math.max(0, subtotal - discountAmount + shippingCost)
+  const discountAmount = appliedDiscount
+    ? Math.round(effectiveSubtotal * appliedDiscount * 100) / 100
+    : 0
+  const grandTotal = Math.max(0, effectiveSubtotal - discountAmount + shippingCost)
 
   const formatPrice = (amount: number) =>
     new Intl.NumberFormat("en-US", { style: "currency", currency }).format(amount)
@@ -110,14 +179,14 @@ export default function CheckoutPage() {
         shippingMethod,
         shippingCost,
         paymentMethod,
-        items: lines.map((item) => ({
+        items: activeLines.map((item) => ({
           id: item.id,
           title: item.title,
           price: item.price,
           quantity: item.quantity,
           image: item.image,
         })),
-        subtotal,
+        subtotal: effectiveSubtotal,
         discountAmount,
         grandTotal,
         currency,
@@ -553,7 +622,7 @@ export default function CheckoutPage() {
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  disabled={isPending || lines.length === 0}
+                  disabled={isPending || activeLines.length === 0}
                   className="w-full bg-primary text-primary-foreground py-4 rounded-full font-medium hover:bg-primary/90 boty-transition boty-shadow text-base flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
                   {isPending ? (
@@ -573,16 +642,17 @@ export default function CheckoutPage() {
               <div className="bg-card rounded-3xl p-6 md:p-8 boty-shadow sticky top-28">
                 <div className="flex items-center justify-between mb-6 pb-4 border-b border-border/50">
                   <h3 className="font-serif text-xl text-foreground font-medium">Order Summary</h3>
-                  <span className="text-xs text-muted-foreground">
-                    {lines.length} {lines.length === 1 ? "Item" : "Items"}
+                  <span className="text-xs text-muted-foreground font-medium">
+                    {activeLines.reduce((sum, item) => sum + item.quantity, 0)}{" "}
+                    {activeLines.reduce((sum, item) => sum + item.quantity, 0) === 1 ? "Item" : "Items"}
                   </span>
                 </div>
 
                 {/* Items List */}
-                {lines.length === 0 ? (
+                {activeLines.length === 0 ? (
                   <div className="py-8 text-center text-muted-foreground">
                     <ShoppingBag className="w-10 h-10 mx-auto text-muted-foreground/40 mb-3" />
-                    <p className="text-sm">No items in cart</p>
+                    <p className="text-sm font-medium">No items in cart</p>
                     <Link
                       href="/shop"
                       className="mt-3 inline-block text-xs font-semibold text-primary underline"
@@ -592,7 +662,7 @@ export default function CheckoutPage() {
                   </div>
                 ) : (
                   <div className="space-y-4 max-h-72 overflow-y-auto pr-1 mb-6">
-                    {lines.map((item) => (
+                    {activeLines.map((item) => (
                       <div key={item.id} className="flex items-center gap-4">
                         <div className="relative w-16 h-16 rounded-xl bg-background overflow-hidden flex-shrink-0 border border-border/50">
                           <Image
@@ -637,7 +707,7 @@ export default function CheckoutPage() {
                     </button>
                   </div>
                   {promoSuccess && (
-                    <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-2 flex items-center gap-1">
+                    <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-2 flex items-center gap-1 font-medium">
                       <Sparkles className="w-3 h-3" />
                       {promoSuccess}
                     </p>
@@ -651,7 +721,7 @@ export default function CheckoutPage() {
                 <div className="space-y-3 pt-4 border-t border-border/50 text-sm">
                   <div className="flex justify-between text-muted-foreground">
                     <span>Subtotal</span>
-                    <span>{formatPrice(subtotal)}</span>
+                    <span>{formatPrice(effectiveSubtotal)}</span>
                   </div>
                   {appliedDiscount && (
                     <div className="flex justify-between text-emerald-600 dark:text-emerald-400 font-medium">
@@ -692,5 +762,19 @@ export default function CheckoutPage() {
         </div>
       </main>
     </div>
+  )
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary" />
+        </div>
+      }
+    >
+      <CheckoutContent />
+    </Suspense>
   )
 }

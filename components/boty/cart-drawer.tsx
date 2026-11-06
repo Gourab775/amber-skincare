@@ -3,6 +3,7 @@
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import {
   Drawer,
   DrawerClose,
@@ -15,6 +16,7 @@ import {
 import { useCart } from "./cart-context"
 
 export function CartDrawer() {
+  const router = useRouter()
   const { cart, removeItem, updateQuantity, isOpen, setIsOpen, itemCount, subtotal, isPending } = useCart()
 
   const lines = cart?.lines ?? []
@@ -35,7 +37,7 @@ export function CartDrawer() {
         window.location.href = url
       }
     } else {
-      window.location.href = "/checkout"
+      router.push("/checkout")
     }
   }
 

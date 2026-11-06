@@ -15,10 +15,11 @@ const CART_COOKIE = "amber_cart_id"
 
 async function setCartCookie(cartId: string) {
   const cookieStore = await cookies()
+  const isProduction = process.env.NODE_ENV === "production"
   cookieStore.set(CART_COOKIE, cartId, {
     httpOnly: true,
     sameSite: "lax",
-    secure: true,
+    secure: isProduction,
     maxAge: 60 * 60 * 24 * 30,
     path: "/",
   })

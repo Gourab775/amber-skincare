@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { ChevronLeft, Minus, Plus, ChevronDown, Leaf, Heart, Award, Recycle, Star, Check } from "lucide-react"
 import { Header } from "@/components/boty/header"
 import { Footer } from "@/components/boty/footer"
@@ -19,6 +20,7 @@ const benefits = [
 type AccordionSection = "details" | "howToUse" | "ingredients" | "delivery"
 
 export function ProductDetail({ product }: { product: Product }) {
+  const router = useRouter()
   const { addItem } = useCart()
   const [quantity, setQuantity] = useState(1)
   const [openAccordion, setOpenAccordion] = useState<AccordionSection | null>("details")
@@ -41,7 +43,7 @@ export function ProductDetail({ product }: { product: Product }) {
   const handleBuyNow = async () => {
     if (!product.variantId) return
     await addItem(product.variantId, quantity)
-    window.location.href = "/checkout"
+    router.push(`/checkout?buyNow=${product.id}&qty=${quantity}`)
   }
 
   const accordionItems: { key: AccordionSection; title: string; content: string }[] = [
